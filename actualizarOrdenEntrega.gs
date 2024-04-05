@@ -4,7 +4,7 @@ function actualizarOrdenEntrega() {
   var pedidosSheet = ss.getSheetByName("Pedidos");
 
   var numeroPedido = ordenEntregaSheet.getRange("F5").getValue(); // Obtener el número de pedido ingresado
-  var columnaNumeroPedido = 25; // Buscar el número de pedido en la columna de la hoja Pedidos
+  var columnaNumeroPedido = 26; // Buscar el número de pedido en la columna de la hoja Pedidos
   var ultimaFila = pedidosSheet.getLastRow();
   var data = pedidosSheet.getRange(2, columnaNumeroPedido, ultimaFila - 1).getValues(); // Devuelve una lista de todos los nro_pedidos
   
@@ -53,6 +53,8 @@ function actualizarOrdenEntrega() {
     ordenEntregaSheet.getRange("G30").setValue(valor_embalaje); 
     var senia = pedidosSheet.getRange(filaEncontrada, 12).getValue(); 
     ordenEntregaSheet.getRange("G32").setValue(senia);
+    var pagos_recibidos = pedidosSheet.getRange(filaEncontrada, 29).getValue(); 
+    ordenEntregaSheet.getRange("G33").setValue(pagos_recibidos);
     var recibe = pedidosSheet.getRange(filaEncontrada, 24).getValue(); 
     ordenEntregaSheet.getRange("F14").setValue(recibe);    
   } else {
@@ -71,8 +73,8 @@ function actualizarOrdenEntrega() {
     ordenEntregaSheet.getRange("G29").setValue("");
     ordenEntregaSheet.getRange("G30").setValue("");
     ordenEntregaSheet.getRange("G32").setValue("");
+    ordenEntregaSheet.getRange("G33").setValue("");
     ordenEntregaSheet.getRange("F14").setValue("");
     ordenEntregaSheet.getRange("F10").setValue("");
   } 
 }
-

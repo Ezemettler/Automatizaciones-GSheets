@@ -3,7 +3,7 @@ function actualizarFormulasPedidos() {
   var lastRow = pedidosSheet.getLastRow();
   
   // Actualizar el número de pedido
-  var numeroPedidoColumna = 25;
+  var numeroPedidoColumna = 26;
   var numeroPedidoRange = pedidosSheet.getRange(2, numeroPedidoColumna, lastRow - 1, 1);
   var numerosPedido = numeroPedidoRange.getValues();
   var maxNumeroPedido = Math.max.apply(null, numerosPedido.flat());
@@ -24,27 +24,27 @@ function actualizarFormulasPedidos() {
     var total = preciosFinales[i][0] + valoresEnvio[i][0] + valoresEmbalaje[i][0];
     totalACobrar.push([total]);
   }
-  pedidosSheet.getRange(2, 27, totalACobrar.length, 1).setValues(totalACobrar);
+  pedidosSheet.getRange(2, 28, totalACobrar.length, 1).setValues(totalACobrar);
   
   // Actualizar el total cobrado
   var valoresSenado = pedidosSheet.getRange(2, 12, lastRow - 1, 1).getValues();
-  var pagosRecibidos = pedidosSheet.getRange(2, 28, lastRow - 1, 1).getValues();
+  var pagosRecibidos = pedidosSheet.getRange(2, 29, lastRow - 1, 1).getValues();
   var totalCobrado = [];
   for (var i = 0; i < lastRow - 1; i++) {
     var total = valoresSenado[i][0] + pagosRecibidos[i][0];
     totalCobrado.push([total]);
   }
-  pedidosSheet.getRange(2, 29, totalCobrado.length, 1).setValues(totalCobrado);
+  pedidosSheet.getRange(2, 30, totalCobrado.length, 1).setValues(totalCobrado);
   
   // Actualizar el saldo a cobrar
-  var totalACobrarValues = pedidosSheet.getRange(2, 27, lastRow - 1, 1).getValues();
-  var totalCobradoValues = pedidosSheet.getRange(2, 29, lastRow - 1, 1).getValues();
+  var totalACobrarValues = pedidosSheet.getRange(2, 28, lastRow - 1, 1).getValues();
+  var totalCobradoValues = pedidosSheet.getRange(2, 30, lastRow - 1, 1).getValues();
   var saldoACobrar = [];
   for (var i = 0; i < lastRow - 1; i++) {
     var saldo = totalACobrarValues[i][0] - totalCobradoValues[i][0];
     saldoACobrar.push([saldo]);
   }
-  pedidosSheet.getRange(2, 30, saldoACobrar.length, 1).setValues(saldoACobrar);
+  pedidosSheet.getRange(2, 31, saldoACobrar.length, 1).setValues(saldoACobrar);
   
   // Actualizar la etiqueta
   var etiquetas = [];
@@ -55,5 +55,5 @@ function actualizarFormulasPedidos() {
     var etiqueta = porcentaje < 50 ? "Amarillo" : "Blanco";
     etiquetas.push([etiqueta]);
   }
-  pedidosSheet.getRange(2, 31, etiquetas.length, 1).setValues(etiquetas);
+  pedidosSheet.getRange(2, 32, etiquetas.length, 1).setValues(etiquetas);
 }
