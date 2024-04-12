@@ -17,9 +17,9 @@ El calendario de pedidos permite a los usuarios:
 
 Mockup del tablero de visualización aprobado por el cliente:
 
-![dashobard-1general](./dashboard/version-final/dashboard-freedom-1General.png)
-![dashobard-2pedidos](./dashboard/version-final/dashboard-freedom-2Pedidos.png)
-![dashobard-3finanzas](./dashboard/version-final/dashboard-freedom-3Finanzas.png)
+![dashobard-1general](./dashboard/mockup/dashboard-freedom-1General.png)
+![dashobard-2pedidos](./dashboard/mockup/dashboard-freedom-2Pedidos.png)
+![dashobard-3finanzas](./dashboard/mockup/dashboard-freedom-3Finanzas.png)
 
 
 ### Contenido del Repositorio
