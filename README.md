@@ -1,6 +1,6 @@
 # Gestión de pedidos - Fabrica de sillones
 
-Este proyecto consiste en una aplicación para gestionar y visualizar pedidos en un calendario. 
+Este proyecto consiste en automatizar la carga, procesamiento y visualización de datos de una fabrica de sillones. 
 La aplicación se desarrolló utilizando Google Apps Script y Google Sheets.
 
 
