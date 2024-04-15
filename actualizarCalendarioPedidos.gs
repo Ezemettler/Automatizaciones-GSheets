@@ -17,9 +17,9 @@ function actualizarCalendarioPedidos() {
     var row = data[j];
     var fechaEntrega = formatDate(row[21]);
     var pedidoData = obtenerDatosPedido(row);
-    var terminado = row[32];
+    var terminado = row[33];
 
-    if (typeof row[31] === 'string' && row[31].toLowerCase().includes("amarillo")) {
+    if (row[32].toLowerCase().includes("amarillo")) {
       if (!datosPorFechaAmarillo[fechaEntrega]) {
         datosPorFechaAmarillo[fechaEntrega] = [];
       }
@@ -99,7 +99,7 @@ function obtenerDatosPedido(row) {
   var placa = row[7]; // Columna 8: Placa del producto
   var patas = row[8]; // Columna 9: Patas del producto
   var accesorios = row[9]; // Columna 10: Accesorios del producto
-  var etiqueta = row[31]; // Columna AD: Etiqueta de color
+  var etiqueta = row[32]; // Columna 32: Etiqueta de color
 
   // Formatear los datos del pedido en una cadena de texto
   var pedidoText = comprador + "\n" + producto + " - " + medidas + "\n" + tela + " - " + color + "\nPlaca: " + placa + "\nPatas: " + patas + "\n" + accesorios + "\nEtiqueta: " + etiqueta;
