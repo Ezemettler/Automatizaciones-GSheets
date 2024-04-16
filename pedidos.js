@@ -151,35 +151,65 @@ function obtenerDatosPedido(row) {
 function pintarCeldas(hoja, datosPorFechaAmarillo, datosPorFechaBlanco, fechasOrdenadas) {
     for (var k = 0; k < fechasOrdenadas.length; k++) {    // Recorre cada fecha ordenada en la lista de fechas ordenadas
         var fecha = fechasOrdenadas[k];   // Obtiene la fecha actual del índice k
-        var rowData = [fecha];    // Inicializa una lista para almacenar los datos de la fila actual, comenzando con la fecha
+        var currentColumn = 2;    // Inicializa la columna actual en la segunda columna (donde se inician los pedidos)
 
-        if (datosPorFechaAmarillo[fecha]) {   // Verifica si hay pedidos en la fecha actual con etiqueta amarilla
+        // Procesa pedidos con etiqueta amarilla
+        if (datosPorFechaAmarillo[fecha]) {
             for (var l = 0; l < datosPorFechaAmarillo[fecha].length; l++) {   // Recorre cada pedido en la fecha actual con etiqueta amarilla
                 var pedido = datosPorFechaAmarillo[fecha][l];   // Obtiene el pedido actual de la lista de pedidos amarillos para la fecha actual
-                rowData.push(pedido.pedidoData);    // Agrega los datos del pedido a la lista de datos de la fila actual
+                var espacioEnCalendario = pedido.espacioEnCalendario || 1;   // Obtiene el espacio en calendario del pedido, por defecto 1 si no está especificado
 
-                if (pedido.terminado && pedido.terminado.toLowerCase().includes() === "si") {  // Verifica si el pedido está terminado
-                    hoja.getRange(k + 2, l + 2).setBackground('#34a853');     // Si el pedido está terminado, establece el color de celda a verde
-                } else {
-                    hoja.getRange(k + 2, l + 2).setBackground("#ffff00");     // Si el pedido no está terminado, pinta la celda deamarillo
+                // Define el rango de celdas para el pedido actual
+                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, espacioEnCalendario);
+
+                // Establece el valor del pedido en el rango de celdas
+                rangeToSet.setValue(pedido.pedidoData);
+
+                // Combina celdas si el espacio en calendario es mayor a 1
+                if (espacioEnCalendario > 1) {
+                    rangeToSet.merge();
                 }
+
+                // Establece el color de fondo de la celda según el estado del pedido
+                if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
+                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado
+                } else {
+                    rangeToSet.setBackground("#ffff00"); // Amarillo para pedidos con etiqueta amarilla
+                }
+
+                // Avanza la columna actual según el espacio en calendario
+                currentColumn += espacioEnCalendario;
             }
         }
-        
-        if (datosPorFechaBlanco[fecha]) {   // Verifica si hay pedidos en la fecha actual sin etiqueta amarilla
+
+        // Procesa pedidos sin etiqueta amarilla
+        if (datosPorFechaBlanco[fecha]) {
             for (var m = 0; m < datosPorFechaBlanco[fecha].length; m++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla
                 var pedido = datosPorFechaBlanco[fecha][m];   // Obtiene el pedido actual de la lista de pedidos blancos para la fecha actual
-                rowData.push(pedido.pedidoData);    // Agrega los datos del pedido a la lista de datos de la fila actual
-                
-                if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {    // Verifica si el pedido está terminado
-                    hoja.getRange(k + 2, datosPorFechaBlanco[fecha].length + m + 2).setBackground("#34a853"); // Si el pedido está terminado, pinta la celda de verde.
-                } else {
-                    hoja.getRange(k + 2, datosPorFechaBlanco[fecha].length + m + 2).setBackground("#ffffff"); // Si el pedido no está terminado, la celda queda en blanco.
+                var espacioEnCalendario = pedido.espacioEnCalendario || 1;   // Obtiene el espacio en calendario del pedido, por defecto 1 si no está especificado
+
+                // Define el rango de celdas para el pedido actual
+                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, espacioEnCalendario);
+
+                // Establece el valor del pedido en el rango de celdas
+                rangeToSet.setValue(pedido.pedidoData);
+
+                // Combina celdas si el espacio en calendario es mayor a 1
+                if (espacioEnCalendario > 1) {
+                    rangeToSet.merge();
                 }
+
+                // Establece el color de fondo de la celda según el estado del pedido
+                if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
+                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado
+                } else {
+                    rangeToSet.setBackground("#ffffff"); // Blanco para pedidos sin etiqueta amarilla
+                }
+
+                // Avanza la columna actual según el espacio en calendario
+                currentColumn += espacioEnCalendario;
             }
         }
-
-        hoja.appendRow(rowData);  // Añade los datos de la fila actual a la hoja
     }
 }
 
