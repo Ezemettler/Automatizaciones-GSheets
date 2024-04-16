@@ -149,71 +149,67 @@ function obtenerDatosPedido(row) {
 
 
 function pintarCeldas(hoja, datosPorFechaAmarillo, datosPorFechaBlanco, fechasOrdenadas) {
-    for (var k = 0; k < fechasOrdenadas.length; k++) {    // Recorre cada fecha ordenada en la lista de fechas ordenadas
-        var fecha = fechasOrdenadas[k];   // Obtiene la fecha actual del índice k
-        var currentColumn = 2;    // Inicializa la columna actual en la segunda columna (donde se inician los pedidos)
+    // Imprimir las fechas ordenadas en la primera columna
+    for (var i = 0; i < fechasOrdenadas.length; i++) {
+        var fecha = fechasOrdenadas[i];
+        // Establecer la fecha en la primera columna (columna A) y la fila i + 2 (para evitar sobrescribir el encabezado)
+        hoja.getRange(i + 2, 1).setValue(fecha);
+    }
 
-        // Procesa pedidos con etiqueta amarilla
+    // El resto de la función se mantiene igual para procesar los pedidos con etiquetas amarillas y blancas
+    for (var k = 0; k < fechasOrdenadas.length; k++) {    // Recorre cada fecha ordenada en la lista de fechas ordenadas.
+        var fecha = fechasOrdenadas[k];   // Obtiene la fecha actual del índice k.
+        var currentColumn = 2;    // Inicializa la columna actual en la segunda columna (donde se inician los pedidos).
+
+        // Procesa pedidos con etiqueta amarilla.
         if (datosPorFechaAmarillo[fecha]) {
-            for (var l = 0; l < datosPorFechaAmarillo[fecha].length; l++) {   // Recorre cada pedido en la fecha actual con etiqueta amarilla
-                var pedido = datosPorFechaAmarillo[fecha][l];   // Obtiene el pedido actual de la lista de pedidos amarillos para la fecha actual
-                var espacioEnCalendario = pedido.espacioEnCalendario || 1;   // Obtiene el espacio en calendario del pedido, por defecto 1 si no está especificado
+            for (var l = 0; l < datosPorFechaAmarillo[fecha].length; l++) {   // Recorre cada pedido en la fecha actual con etiqueta amarilla.
+                var pedido = datosPorFechaAmarillo[fecha][l];   // Obtiene el pedido actual de la lista de pedidos amarillos para la fecha actual.
 
-                // Define el rango de celdas para el pedido actual
-                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, espacioEnCalendario);
+                // Define el rango de celdas para el pedido actual.
+                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
 
-                // Establece el valor del pedido en el rango de celdas
+                // Establece el valor del pedido en el rango de celdas.
                 rangeToSet.setValue(pedido.pedidoData);
 
-                // Combina celdas si el espacio en calendario es mayor a 1
-                if (espacioEnCalendario > 1) {
-                    rangeToSet.merge();
-                }
-
-                // Establece el color de fondo de la celda según el estado del pedido
+                // Establece el color de fondo de la celda según el estado del pedido.
                 if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
-                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado
+                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
                 } else {
-                    rangeToSet.setBackground("#ffff00"); // Amarillo para pedidos con etiqueta amarilla
+                    rangeToSet.setBackground("#ffff00"); // Amarillo para pedidos con etiqueta amarilla.
                 }
 
-                // Avanza la columna actual según el espacio en calendario
-                currentColumn += espacioEnCalendario;
+                // Avanza la columna actual.
+                currentColumn++;
             }
         }
 
-        // Procesa pedidos sin etiqueta amarilla
+        // Procesa pedidos sin etiqueta amarilla.
         if (datosPorFechaBlanco[fecha]) {
-            for (var m = 0; m < datosPorFechaBlanco[fecha].length; m++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla
-                var pedido = datosPorFechaBlanco[fecha][m];   // Obtiene el pedido actual de la lista de pedidos blancos para la fecha actual
-                var espacioEnCalendario = pedido.espacioEnCalendario || 1;   // Obtiene el espacio en calendario del pedido, por defecto 1 si no está especificado
+            for (var m = 0; m < datosPorFechaBlanco[fecha].length; m++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla.
+                var pedido = datosPorFechaBlanco[fecha][m];   // Obtiene el pedido actual de la lista de pedidos blancos para la fecha actual.
 
-                // Define el rango de celdas para el pedido actual
-                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, espacioEnCalendario);
+                // Define el rango de celdas para el pedido actual.
+                var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
 
-                // Establece el valor del pedido en el rango de celdas
+                // Establece el valor del pedido en el rango de celdas.
                 rangeToSet.setValue(pedido.pedidoData);
 
-                // Combina celdas si el espacio en calendario es mayor a 1
-                if (espacioEnCalendario > 1) {
-                    rangeToSet.merge();
-                }
-
-                // Establece el color de fondo de la celda según el estado del pedido
+                // Establece el color de fondo de la celda según el estado del pedido.
                 if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
-                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado
+                    rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
                 } else {
-                    rangeToSet.setBackground("#ffffff"); // Blanco para pedidos sin etiqueta amarilla
+                    rangeToSet.setBackground("#ffffff"); // Blanco para pedidos sin etiqueta amarilla.
                 }
 
-                // Avanza la columna actual según el espacio en calendario
-                currentColumn += espacioEnCalendario;
+                // Avanza la columna actual.
+                currentColumn++;
             }
         }
     }
 }
 
-
+    
 function alinearCeldasVerticalmente() {
   // Esta función alinea verticalmente las celdas en la hoja de "Calendario Pedidos"
   var spreadsheet = SpreadsheetApp.getActiveSpreadsheet();   
