@@ -87,6 +87,7 @@ function actualizarCalendarioPedidos() {
   var data = pedidosSheet.getDataRange().getValues();   // Obtiene los datos de la hoja "Pedidos"
   var datosPorFechaAmarillo = {}; // Crea diccionarios para almacenar pedidos por fecha y etiqueta
   var datosPorFechaBlanco = {};
+  var datosPorFechaTerciarizado = {};
 
   for (var j = 1; j < data.length; j++) {       // Itera sobre cada fila de datos de la hoja "Pedidos", a partir de la segunda fila (excluye la cabecera)
       var row = data[j];                        // Obtiene la fila actual del ciclo.
@@ -100,20 +101,32 @@ function actualizarCalendarioPedidos() {
               datosPorFechaAmarillo[fechaEntrega] = []; 
           }
           datosPorFechaAmarillo[fechaEntrega].push({ pedidoData: pedidoData, terminado: terminado });   // Agrega el pedido al diccionario correspondiente a la fecha
-      } else {
+      }
+
+      // Verifica si el pedido tiene la etiqueta "Blanco"
+      if (row[32].includes("Blanco")) {
           if (!datosPorFechaBlanco[fechaEntrega]) {       // Si la fecha no está en el diccionario, la crea como un array vacío
               datosPorFechaBlanco[fechaEntrega] = [];
           }
           datosPorFechaBlanco[fechaEntrega].push({ pedidoData: pedidoData, terminado: terminado });     // Agrega el pedido al diccionario correspondiente a la fecha
       }
+
+      // Verifica si el pedido tiene la etiqueta "Terciarizado"
+      if (row[32].includes("Terciarizado")) {
+          if (!datosPorFechaTerciarizado[fechaEntrega]) { // Si la fecha no está en el diccionario, la crea como un array vacío
+              datosPorFechaTerciarizado[fechaEntrega] = [];
+          }
+          datosPorFechaTerciarizado[fechaEntrega].push({ pedidoData: pedidoData, terminado: terminado }); // Agrega el pedido al diccionario correspondiente a la fecha
+      }
   }
 
-  // Obtiene las fechas de los pedidos con etiqueta "amarillo" y "blanco"
+  // Obtiene las fechas de los pedidos con etiqueta "amarillo", "blanco" y "terciarizado"
   var fechasAmarillo = Object.keys(datosPorFechaAmarillo);
   var fechasBlanco = Object.keys(datosPorFechaBlanco);
-  
+  var fechasTerciarizado = Object.keys(datosPorFechaTerciarizado);
+
   // Combina y ordena las fechas sin duplicados
-  var fechasOrdenadas = fechasAmarillo.concat(fechasBlanco).filter((fecha, index, self) => self.indexOf(fecha) === index).sort(function(a, b) {
+  var fechasOrdenadas = [...new Set([...fechasAmarillo, ...fechasBlanco, ...fechasTerciarizado])].sort(function(a, b) {
       return new Date(a.split("/").reverse().join("/")) - new Date(b.split("/").reverse().join("/"));
   });
   
@@ -123,29 +136,9 @@ function actualizarCalendarioPedidos() {
       headers.push("Pedido " + (i + 1));
   }
 
-  // Define un diccionario para almacenar pedidos terciarizados por fecha
-  var datosPorFechaTerciarizado = {};
-  // Itera sobre los datos para identificar y almacenar los pedidos terciarizados
-  for (var j = 1; j < data.length; j++) {
-      var row = data[j]; // Obtiene la fila actual del ciclo
-      var fechaEntrega = formatDate(row[12]); // Formatea la fecha de entrega
-      var pedidoData = obtenerDatosPedido(row); // Obtiene los datos del pedido
-      var terminado = row[33]; // Obtiene el estado de finalización del pedido
-
-      // Verifica si el pedido está terciarizado
-      if (row[32].includes("Terciarizado")) {
-          if (!datosPorFechaTerciarizado[fechaEntrega]) { // Si la fecha no está en el diccionario, la crea como un array vacío
-              datosPorFechaTerciarizado[fechaEntrega] = [];
-          }
-          datosPorFechaTerciarizado[fechaEntrega].push({ pedidoData: pedidoData, terminado: terminado }); // Agrega el pedido al diccionario correspondiente a la fecha
-      }
-  }
-
-
   calendarioSheet.getRange(1, 1, 1, headers.length).setValues([headers]);   // Establece los encabezados en la primera fila de la hoja "Calendario Pedidos"
   pintarCeldas(calendarioSheet, datosPorFechaAmarillo, datosPorFechaBlanco, datosPorFechaTerciarizado, fechasOrdenadas);  // Llama a la función que pinta las celdas según los datos de pedidos
   calendarioSheet.autoResizeColumns(1, calendarioSheet.getLastColumn());    // Ajusta automáticamente el ancho de las columnas
-
   alinearCeldasVerticalmente();   // Alinea verticalmente las celdas en la hoja "Calendario Pedidos"
   formatoCabecera();      // Aplica formato a la cabecera de la hoja "Calendario Pedidos"
   agregarBordesNegros();  // Agrega bordes negros a las celdas de la hoja "Calendario Pedidos"
@@ -189,73 +182,67 @@ function pintarCeldas(hoja, datosPorFechaAmarillo, datosPorFechaBlanco, datosPor
       var fecha = fechasOrdenadas[k];   // Obtiene la fecha actual del índice k.
       var currentColumn = 2;    // Inicializa la columna actual en la segunda columna (donde se inician los pedidos).
 
-      // Procesa pedidos con etiqueta amarilla.
+      // Procesa pedidos con etiqueta "Amarillo".
       if (datosPorFechaAmarillo[fecha]) {
-          for (var l = 0; l < datosPorFechaAmarillo[fecha].length; l++) {   // Recorre cada pedido en la fecha actual con etiqueta amarilla.
-              var pedido = datosPorFechaAmarillo[fecha][l];   // Obtiene el pedido actual de la lista de pedidos amarillos para la fecha actual.
+        for (var l = 0; l < datosPorFechaAmarillo[fecha].length; l++) {   // Recorre cada pedido en la fecha actual con etiqueta amarilla.
+            var pedido = datosPorFechaAmarillo[fecha][l];   // Obtiene el pedido actual de la lista de pedidos amarillos para la fecha actual.
 
-              // Define el rango de celdas para el pedido actual.
-              var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+            // Define el rango de celdas para el pedido actual.
+            var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+            rangeToSet.setValue(pedido.pedidoData);   // Establece el valor del pedido en el rango de celdas.
 
-              // Establece el valor del pedido en el rango de celdas.
-              rangeToSet.setValue(pedido.pedidoData);
+            // Establece el color de fondo de la celda según el estado del pedido.
+            if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
+                rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
+            } else {
+                rangeToSet.setBackground("#ffff00"); // Amarillo para pedidos con etiqueta amarilla.
+            }
 
-              // Establece el color de fondo de la celda según el estado del pedido.
-              if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
-                  rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
-              } else {
-                  rangeToSet.setBackground("#ffff00"); // Amarillo para pedidos con etiqueta amarilla.
-              }
-
-              // Avanza la columna actual.
-              currentColumn++;
-          }
+            currentColumn++;    // Avanza la columna actual.
+        }
       }
 
-      // Procesa pedidos sin etiqueta amarilla.
+      // Procesa pedidos sin etiqueta "Blanco".
       if (datosPorFechaBlanco[fecha]) {
-          for (var m = 0; m < datosPorFechaBlanco[fecha].length; m++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla.
-              var pedido = datosPorFechaBlanco[fecha][m];   // Obtiene el pedido actual de la lista de pedidos blancos para la fecha actual.
+        for (var m = 0; m < datosPorFechaBlanco[fecha].length; m++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla.
+            var pedido = datosPorFechaBlanco[fecha][m];   // Obtiene el pedido actual de la lista de pedidos blancos para la fecha actual.
 
-              // Define el rango de celdas para el pedido actual.
-              var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+            // Define el rango de celdas para el pedido actual.
+            var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+            rangeToSet.setValue(pedido.pedidoData);     // Establece el valor del pedido en el rango de celdas.
 
-              // Establece el valor del pedido en el rango de celdas.
-              rangeToSet.setValue(pedido.pedidoData);
+            // Establece el color de fondo de la celda según el estado del pedido.
+            if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
+                rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
+            } else {
+                rangeToSet.setBackground("#ffffff"); // Blanco para pedidos sin etiqueta amarilla.
+            }
 
-              // Establece el color de fondo de la celda según el estado del pedido.
-              if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
-                  rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
-              } else {
-                  rangeToSet.setBackground("#ffffff"); // Blanco para pedidos sin etiqueta amarilla.
-              }
-
-              // Avanza la columna actual.
-              currentColumn++;
-          }
+            currentColumn++;  // Avanza la columna actual.
+        }
       }
 
-      // Procesa pedidos "Terciarizados".
+      // Procesa pedidos "Terciarizados" solo una vez
       if (datosPorFechaTerciarizado[fecha]) {
-          for (var n = 0; n < datosPorFechaTerciarizado[fecha].length; n++) {   // Recorre cada pedido "Terciarizado" en la fecha actual.
-              var pedido = datosPorFechaTerciarizado[fecha][n];   // Obtiene el pedido actual de la lista de pedidos "Terciarizados" para la fecha actual.
+        for (var n = 0; n < datosPorFechaTerciarizado[fecha].length; n++) {   // Recorre cada pedido en la fecha actual sin etiqueta amarilla.
+          var pedido = datosPorFechaTerciarizado[fecha][n];   // Obtiene el primer pedido "Terciarizado" en la fecha actual.
 
-              // Define el rango de celdas para el pedido actual.
-              var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+          // Define el rango de celdas para el pedido terciarizado.
+          var rangeToSet = hoja.getRange(k + 2, currentColumn, 1, 1); // Rango de celdas de 1x1.
+          rangeToSet.setValue(pedido.pedidoData);         // Establece el valor del pedido en el rango de celdas.
 
-              // Establece el valor del pedido en el rango de celdas.
-              rangeToSet.setValue(pedido.pedidoData);
-
-              // Establece el color de fondo de la celda para los pedidos "Terciarizados".
+          // Establece el color de fondo de la celda según el estado del pedido.
+          if (pedido.terminado && pedido.terminado.toLowerCase() === "si") {
+              rangeToSet.setBackground("#34a853"); // Verde para pedido terminado.
+          } else {
               rangeToSet.setBackground("#8e7cc3"); // Violeta para pedidos "Terciarizados".
-
-              // Avanza la columna actual.
-              currentColumn++;
           }
+          
+          currentColumn++;     // Avanza la columna actual.
       }
   }
 }
-
+}
 
 
 function alinearCeldasVerticalmente() {
@@ -312,6 +299,3 @@ for (var columna in columnWidths) {
 // Establece los bordes negros alrededor del rango de celdas
 rango.setBorder(true, true, true, true, true, true, "#000000", SpreadsheetApp.BorderStyle.SOLID); 
 }
-
-
-
